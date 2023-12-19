@@ -19,6 +19,7 @@ struct patient
 	char blood[5];
 	char gender;
     patient*next;
+char const* name ;
 };
 class linkedqueue
 {
@@ -36,6 +37,7 @@ class linkedqueue
     void getpatientout();
     void listofpatients();
     int search(int);
+int search (char const*);
     char departmentname[50];
 };
 
@@ -95,6 +97,32 @@ int linkedqueue :: search(int item)
     if(flag==0)
     return false;
     }return 0;
+}
+int linkedqueue :: search(char const* name)
+{
+    if (head == NULL)
+        return false;
+    else
+    {
+        int flag = 0;
+        patient *p = new patient();
+        p = head;
+
+        while (p->next != NULL && strcmp(p->name, name) != 0)
+        {
+            p = p->next;
+        }
+
+        if (strcmp(p->name, name) == 0)
+        {
+            flag = 1;
+            return true;
+        }
+
+        if (flag == 0)
+            return false;
+    }
+    return 0;
 }
 
 
