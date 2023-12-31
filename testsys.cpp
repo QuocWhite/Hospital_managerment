@@ -1,46 +1,54 @@
-#include<iostream>
+/*#include<iostream>
 #include<sstream>
 #include<string.h>
 #include<ctype.h>
 #include<fstream>
 #include<stdlib.h>
-#include<time.h>
-#include<unistd.h>
+//lib for login feature unistd.h available in Linux
+//#include<time.h>
+//#include<unistd.h>
+*/
+#include <windows.h>
+#include <bits/stdc++.h>
 
-char const *pass= "hehe";
+
+//char const *pass= "password";
 
 struct patient
 {
-    long long ID;
-    const char *password;
-	std :: string firstname, user;
-	std :: string lastname;
-	int age, count = 1, ch;
-	char blood[5];
-	char gender;
+    std :: string  fullname, hometown/*, user, pass*/;
+	int age, count = 1, blood_presure, heart_beat, ID, d, m, y;
+    float temp;
+    bool death, rash;
+	char gender, choice;
     patient*next;
-char const* name ;
 };
 class linkedqueue
 {
 	patient *head,*last;
 	public:
-	linkedqueue() //constructor
+	linkedqueue()
 	{
 		head=NULL;
 		last=NULL;
 	}
     patient input();
-    void login();
+    void searchbyID();
+    void searchbyID(int ID);
+    void searchbyname();
+    void searchmethod();
     void insertatend();
-    void insertatbeg();
+    void insertatfirst();
     void getpatientout();
+    void waitingpatient();
     void listofpatients();
     int search(int);
-int search (char const*);
-    char departmentname[50];
 };
 
+
+
+//using linux to use login feature
+/*void login();
 void login(){
     patient *p=new patient();
     std :: cout << "Login to te depament!\n";
@@ -73,12 +81,168 @@ void login(){
     }
 
     std :: cout << "Thank you for login.\n";
+}*/
+
+
+int readnumber()
+{
+    int num;
+    std::string input;
+    while (true)
+    {
+        std::cout << "Please enter the ID: ";
+        std::getline(std::cin, input);
+        try
+        {
+            num = std::stoi(input);
+            if (num > 0)
+            {
+                break;
+            }
+        }
+        catch (const std::invalid_argument& e)
+        {
+            std::cout << "Invalid input. Please enter a positive integer." << std::endl;
+        }
+    }
+    return num;
 }
+
+
+void beauty(){
+    int a = 176;
+    char ch = a;
+    std::cout << "\n";
+    for(int i = 0; i < 38; i++){
+        std::cout << ch;
+    }std::cout << "\n";
+}
+
+
+void linkedqueue:: searchbyID(int num){
+    num = readnumber();
+    std::ifstream ip("DATAFULL.csv");
+    std::string line;
+    bool found = false;
+    while (std::getline(ip, line))
+    {
+        std::istringstream iss(line);
+        std::string id, name, birthday, country;
+
+        if (std::getline(iss, id, ',') &&
+            std::getline(iss, name, ',') &&
+            std::getline(iss, birthday, ',')&&
+            std::getline(iss, country))
+        {
+            char *endp = nullptr;
+            int n = std::strtol(id.c_str(), &endp, 10);
+            if (id.c_str() != endp && n == num)
+            {
+                std::cout << "The patient is: " << line;
+                Sleep(3);
+                found = true;
+            }
+        }
+    }
+    if (!found) {
+        std::cout << "No patients in history found with ID: " << num << '\n';
+    }
+}
+
+
+
+void searchbyname()
+{
+    patient*p=new patient();
+    std::ifstream file("DATAFULL.csv");
+    std::string name;
+    std::string line;
+    std::cout << "Enter the name of the patient: ";
+    std::getline(std::cin, name);
+    transform(name.begin(), name.end(), name.begin(), toupper);
+    std::vector<std::string> matches;
+    while (std::getline(file, line))
+    {
+        std::istringstream iss(line);
+        std::string id, patient_name, birthday, country;
+        if (std::getline(iss, id, ',') &&
+            std::getline(iss, patient_name, ',') &&
+            std::getline(iss, birthday, ',') &&
+            std::getline(iss, country))
+        {
+            if (patient_name == name)
+            {
+                matches.push_back(line);
+            }
+        }
+    }
+    if (matches.empty())
+    {
+        std::cout << "No patients found with name: " << name << '\n';
+    }
+    else
+    {
+        std::cout << "The following patients were found with name: " << name << '\n';
+        for (const auto& match : matches)
+        {
+            std::cout << match << '\n';
+        }
+        std :: cout << "\nDo you want to search more(Y/N): ";
+        std :: cin >> p->choice;
+        if(p->choice == 'y'|| p->choice == 'Y')
+        {searchbyname();}
+        else
+        return;
+    }
+}
+
+/*
+void linkedqueue:: searchbyname() {
+    patient*p=new patient();
+    std :: cout << "\nThe name of patient: ";
+    std::string name;
+    getline(std :: cin, name);
+    std::ifstream ip("DATAFULL.csv");
+    std::string line;
+    bool found = false;
+    while (std::getline(ip, line))
+    {
+        std::istringstream iss(line);
+        std::string id, patient_name, birthday, country;
+
+        if (std::getline(iss, id, ',') &&
+            std::getline(iss, patient_name, ',') &&
+            std::getline(iss, birthday, ',')&&
+            std::getline(iss, country))
+        {
+            char *endp = nullptr;
+            if (name.c_str() != endp && name == patient_name)
+            {
+                std::cout << "The patient with the name: " << line;
+                Sleep(3);
+                std :: cout << "\nDo you want to search more(Y/N): ";
+                std :: cin >> p->choice;
+                if(p->choice == 'y'|| p->choice == 'Y')
+                {searchbyname();}
+                else
+                found = true;
+                break;
+            }
+        }
+    }
+    if (!found) {
+        std::cout << "No patients found with name: " << name << '\n';
+    }
+}*/
+
+
+
+
 
 int linkedqueue :: search(int item)
 {
     if(head==NULL)
-    return false;
+        return false;
     else
     {
     int flag=0;
@@ -87,52 +251,21 @@ int linkedqueue :: search(int item)
 
     while( p->next!=NULL && p->ID!=item )
     {
-    p=p->next;
+        p=p->next;
     }
     if(p->ID==item)
     {
-    flag=1;
-    return true;
+        flag=1;
+        return true;
     }
     if(flag==0)
-    return false;
+        return false;
     }return 0;
 }
-int linkedqueue :: search(char const* name)
-{
-    if (head == NULL)
-        return false;
-    else
-    {
-        int flag = 0;
-        patient *p = new patient();
-        p = head;
-
-        while (p->next != NULL && strcmp(p->name, name) != 0)
-        {
-            p = p->next;
-        }
-
-        if (strcmp(p->name, name) == 0)
-        {
-            flag = 1;
-            return true;
-        }
-
-        if (flag == 0)
-            return false;
-    }
-    return 0;
-}
 
 
 
-int readnumber()
-{
-   char b[20];
-   std :: cin.getline(b, sizeof(b));
-   return atoi(b);
-}
+
 
 patient linkedqueue :: input()
 {
@@ -140,38 +273,32 @@ patient linkedqueue :: input()
     std :: string name;
 
 	// opens an existing csv file or creates a new file.
-	fout.open("data.csv",std :: ios::out | std :: ios::app);
+	fout.open("DATAFULL.csv",std :: ios::out | std :: ios::app);
 
     int flag=0;
    patient *p=new patient();
    std :: cout << "\n   Please enter data for patient\n";
-   std :: cout<<"\n   First name     : ";
-   std :: cin >> p->firstname;
-   std :: cout << "   Last name      : ";
-   std :: cin >> p->lastname;
-   name = p->firstname + " " + p->lastname;
-   again :
-   std :: cout << "   Blood Group    : ";
-   std :: cin >> p->blood;
-   if((strcmp(p->blood,"A+")==0)||(strcmp(p->blood,"a+")==0)||(strcmp(p->blood,"A-")==0)||(strcmp(p->blood,"a-")==0)||
-      (strcmp(p->blood,"B+")==0)||(strcmp(p->blood,"b+")==0)||(strcmp(p->blood,"B-")==0)||(strcmp(p->blood,"b-")==0)||
-      (strcmp(p->blood,"O+")==0)||(strcmp(p->blood,"o+")==0)||(strcmp(p->blood,"O-")==0)||(strcmp(p->blood,"o-")==0)||
-      (strcmp(p->blood,"AB+")==0)||(strcmp(p->blood,"ab+")==0)||(strcmp(p->blood,"AB-")==0)||(strcmp(p->blood,"ab-")==0))
-             flag=1;
-    if(flag==0)
-    {
-        std :: cout<<"\n   Invalid Blood Group Try Again..\n\n";
-        goto again;
-
-    }
+   p->ID = readnumber();
+   searchbyID(p->ID);
+   std :: cout <<"\n   Date of hospitalization     : ";
+   std :: time_t t = std::time(0);   
+   std :: tm* now = std::localtime(&t);
+   std :: string Date_of_hospitalization = std::to_string(now->tm_mday)+"/" + std::to_string(now->tm_mon)+"/" + std::to_string(now->tm_year + 1900);
+   std :: cout << Date_of_hospitalization;
+   std :: cout <<"\n   Full name     : ";
+   std :: getline (std :: cin, p->fullname);
    std :: cout<<"   Gender(m/f)    : ";
    std :: cin>>p->gender;
-   std :: cout<<"   Age            : ";
-   std :: cin>>p->age;
-   std :: cout<<"   Mobile number  : ";
-   std :: cin>>p->ID;
-   std :: cout << "Name" << "\t" << "Blood" << "\t" << "Gender" << "\t" << "Age" << "\t" << "Mobile Number";
-   fout << p->firstname<<" " << p->lastname<<"\t" << p->blood << "\t" << p->gender << "\t" << p->age << "\t" << p->ID;
+   std :: cout << "   DoB(dd/mm/yyyy)    : ";std :: cin >> p->d; std :: cin >> p->m ; std :: cin>> p->y;
+   std :: string dob  = std::to_string(p->d)+"/" + std::to_string(p->m)+"/" + std::to_string(p->y);
+   std :: cout << dob;
+   std :: cout<<"\n   Age            : ";
+   p->age = (now->tm_year + 1900) - p->y;
+   std :: cout << p->age;
+   std :: cout<<"\n   Hometown  : ";
+   std :: cin.ignore();
+   std :: getline(std::cin, p->hometown);
+   //fout << p->ID <<"," << p->name <<"," << p->blood << "," << p->gender << "," << p->age << "," << p->phone << "\n";
 
 
 	if(search(p->ID))
@@ -182,27 +309,23 @@ patient linkedqueue :: input()
 	return *p;
 }
 
+
+
 void output(patient *p)
 {
-    int a =178;
-    char ch = a;
-	std :: cout << "\n";
-    for(int i=0; i < 38; i++){
-        std :: cout << ch;
-    }
+    beauty();
     std :: cout<<"\n   Patient data:\n";
-	std :: cout<<"\n   First Name         : "<<p->firstname;
-	std :: cout<<"\n   Last Name          : "<<p->lastname;
+    std :: cout<<"\n   ID         : "<<p->ID;
+	std :: cout<<"\n   Full Name          : "<<p->fullname;
 	std :: cout<<"\n   Gender             : "<<p->gender;
 	std :: cout<<"\n   Age                : "<<p->age;
-	std :: cout<<"\n   Blood Group        : "<<p->blood;
-	std :: cout<<"\n   Mobile Number      : "<<p->ID;
-	std :: cout << "\n";
-    for(int i=0; i < 38; i++){
-        std :: cout << ch;
-    }
+	std :: cout<<"\n   Hometown           : "<<p->hometown;
+	//std :: cout<<"\n   Mobile Number      : "<<p->phone;
+	beauty();
 }
-void linkedqueue :: insertatbeg()
+
+
+void linkedqueue :: insertatfirst()
 {
      patient*p=new patient();
      *p=input();
@@ -221,14 +344,12 @@ void linkedqueue :: insertatbeg()
         p->next=head;
         head=p;
      }
-     system("clear");
+     system("cls");
      std :: cout << "\n\tPatient added:";
      output(p);
 }
 void linkedqueue:: insertatend()
 {
-    int ascii = 178;
-    char ch = ascii;
     patient*p=new patient();
     *p=input();
     if(p->ID==0)
@@ -246,22 +367,19 @@ void linkedqueue:: insertatend()
     last->next=p;
     last=p;
     }
-    system("clear");
-    std :: cout << "\n";
-    for(int i=0; i < 38; i++){
-        std :: cout << ch;
-    }
-    std :: cout<<"\n  |-- HOSPITAL MANAGEMENT SYSTEM --|";
-    std :: cout << "\n";
-    for(int i=0; i < 38; i++){
-        std :: cout << ch;
-    }
+    system("cls");
+    beauty();
+    std :: cout<<"\n  |-- HONGNGOC MANAGEMENT SYSTEM --|";
+    beauty();
     std :: cout <<"\n  ----------PATIENT ADDED-----------";
     output(p);
 }
+
+
+
 void linkedqueue :: getpatientout()
 {
-	 system("clear");
+	 system("cls");
      if(head==NULL)
      {
      	std :: cout<<"\n  No Patient to operate";
@@ -276,76 +394,94 @@ void linkedqueue :: getpatientout()
  	 }
 }
 
+void linkedqueue :: waitingpatient()
+{
+     if(head==NULL)
+     {
+     	std :: cout<<"\n  No Patient is waiting";
+     }
+     else
+     {
+     	patient*p=new patient();
+     	p=head;
+     	head=head->next;
+ 	    std :: cout << "\n  Waiting patient is:" << p->fullname;
+ 	 }
+}
+
+
 void linkedqueue :: listofpatients()
 {
     std :: fstream fin;
-    fin.open("data.csv", std :: ios::in);
-    int ascii = 178;
-    char ch = ascii;
+    fin.open("DATAFULL.csv", std :: ios::in);
     if(head==NULL)
     {
     std :: cout<<"\n  No patient";
     }
-    system("clear");
-    std :: cout << "\n";
-    for(int i=0; i < 38; i++){
-        std :: cout << ch;
-    }
-    std :: cout<<"\n  |-- HOSPITAL MANAGEMENT SYSTEM --|";
-    std :: cout << "\n";
-    for(int i=0; i < 38; i++){
-        std :: cout << ch;
-    }
+    system("cls");
+    beauty();
+    std :: cout<<"\n  |-- HONGNGOC MANAGEMENT SYSTEM --|";
+    beauty();
     patient*p=new patient;
     p=head;
     while(p!=NULL)
     {
     std :: cout<<"\n   Patient data:\n";
-    std :: cout<<"\n   First Name       : "<<p->firstname;
-    std :: cout<<"\n   Last Name        : "<<p->lastname;
-    std :: cout<<"\n   Gender           : "<<p->gender;
-    std :: cout<<"\n   Age              : "<<p->age;
-    std :: cout<<"\n   Blood Group      : "<<p->blood;
-    std :: cout<<"\n   Mobile Number    : "<<p->ID;
-    std :: cout << "\n";
-    for(int i=0; i < 38; i++){
-        std :: cout << ch;
-    }
+    std :: cout<<"\n   ID         : "<<p->ID;
+	std :: cout<<"\n   Full Name          : "<<p->fullname;
+	std :: cout<<"\n   Gender             : "<<p->gender;
+	std :: cout<<"\n   Age                : "<<p->age;
+	std :: cout<<"\n   Hometown           : "<<p->hometown;
+	//std :: cout<<"\n   Mobile Number      : "<<p->phone;
+    beauty();
     p=p->next;
     }
     std :: cout<<"\n";
 }
 
 
-void departmentmenu (linkedqueue * q)
+void linkedqueue :: searchmethod(){
+    linkedqueue * q;
+    std :: cout << "\nDo you want to search by ID or name: ";
+    std :: string choice;
+    getline(std :: cin, choice);
+    if(choice== "ID"||choice== "Id"||choice== "id")
+    {
+        q->searchbyID();
+    }else q->searchbyname();
+}
+
+
+
+
+int readnum()
 {
-    int a = 178;
-    char ch = a;
-    int choice = 0;
+   char b[20];
+   std :: cin.getline(b, sizeof(b));
+   return atoi(b);
+}
+
+
+int main ()
+{
+    linkedqueue * q;
+    int choice = 0, success;
     patient p;
-    while (choice != 5)
+    while (choice != 6)
 	{
-    std :: cout << "\n";
-    for(int i=0; i < 38; i++){
-        std :: cout << ch;
-    }
-    std :: cout<<"\n  |-- HOSPITAL MANAGEMENT SYSTEM --|";
-    std :: cout << "\n";
-    for(int i=0; i < 38; i++){
-        std :: cout << ch;
-    }
-    std :: cout<<"\n\n   "<<q->departmentname;
-	std :: cout<<"\n   [1] Add normal patient\n";
-	std :: cout<<"   [2] Add critically ill patient\n";
-	std :: cout<<"   [3] Take patient to Doctor\n";
-	std :: cout<<"   [4] Display list\n";
-	std :: cout<<"   [5] Change department or exit\n";
-	std :: cout<<"\n   Please enter your choice : ";
-	choice=readnumber();
-	std :: cout << "\n";
-    for(int i=0; i < 38; i++){
-        std :: cout << a;
-    }
+    beauty();
+    std ::cout<<"\n  |-- HONGNGOC MANAGEMENT SYSTEM --|";
+    beauty();
+    
+	std ::cout<<"\n   [1] Add normal patient\n";
+	std ::cout<<"   [2] Add emergency patient\n";
+	std ::cout<<"   [3] Patient to Doctor\n";
+	std ::cout<<"   [4] Display patients are waiting\n";
+	std ::cout<<"   [5] Search patient profile\n";
+    std ::cout<<"   [6] Exit\n";
+	std ::cout<<"\n   Please enter your choice : ";
+	choice=readnum();
+	beauty();
     switch (choice)
 	{
 	  case 1:	q->insertatend();
@@ -353,63 +489,28 @@ void departmentmenu (linkedqueue * q)
 	    		getchar();
 	 			break;
 
-      case 2:	q->insertatbeg();
+      case 2:	q->insertatfirst();
 	    		std :: cout << "\n   Press any key";
 	    		getchar();
 				break;
 
       case 3:	q->getpatientout();
-	 			std :: cout<<"\n   Press any key";
-     			getchar();
-	      		break;
+	 	std :: cout<<"\n   Press any key";
+     		getchar();
+	      	break;
 
-      case 4:	system("clear");
+      case 4:	system("cls");
 	 			q->listofpatients();
 	 			std :: cout<<"\n   Press any key";
 	 			getchar();
 				break;
+      case 5:   q->searchmethod();
+                std :: cout<<"\n   Press any key";
+                getchar();
+                break;
 	 }
     }
-}
-
-int main ()
-{
-    login();
-    int ascii = 178;
-    char ch = ascii;
-    int i, choice = 0;
-	linkedqueue departments[4];
-	while(choice!=5)
-	{
-		strcpy(departments[0].departmentname,"GENERAL CLINIC\n");
-		strcpy(departments[1].departmentname,"HEART CLINIC\n");
-		strcpy(departments[2].departmentname,"LUNG CLINIC\n");
-		strcpy(departments[3].departmentname,"PLASTIC SURGERY\n");
-		std :: cout<<"\n";
-        for(int i=0; i < 38; i++){
-            std :: cout << ch;
-        }
-		std :: cout<<"\n  |-- HOSPITAL MANAGEMENT SYSTEM --|";
-		std :: cout<<"\n";
-        for(int i=0; i < 38; i++){
-            std :: cout << ch;
-        }
-        std :: cout<<"\n\n   Main Menu\n\n";
-		for (i = 0; i < 4; i++)
-		{
-			std :: cout<<"   "<<(i+1)<<": "<<departments[i].departmentname;
-		}
-		std :: cout<<"   5: Exit";
-		std :: cout<<"\n\n   Please enter your choice : ";
-		choice=readnumber();
-		if(choice>=1 && choice<=4)
-		{
-			departmentmenu(&departments[choice-1]);
-		}
-
-	}
-	if(choice==5)
-	std :: cout<<"\n\t\tThank you! \n";
+	if(choice==6)
+	std ::cout<<"\n\t\tThank you! \n";
 	exit(0);
 }
-
